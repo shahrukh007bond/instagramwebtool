@@ -1,0 +1,916 @@
+<html>
+
+<head>
+    <link rel="icon" href="img/logo_mycommunity.png" type="image/gif" sizes="16x16">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+  <div id="header"></div>
+  <div id="content">
+      <input class="int" placeholder="Search Query" type="text" id="querysearch">
+      <input class="btn" onclick="fetchtweets()" type="submit"><img id="searchloader" src="img/loader1.gif" style="width:20px;display: none;margin-left: 20px;position: relative;top: 8px;">
+      <label class="sortlabel" for="sortfilter">Filters:</label>
+      <select onchange="OnFilterChange()" id="sortfil" name="sortfilter">
+          <option>Most Commented</option>
+           <option>Most Liked</option>
+           <option>Most Recent</option>
+      </select>
+      <input class="selectAll_" onclick="myFunction()"  id="select-all" name="select-all" style="width: 20px;height: 20px;vertical-align: sub;margin-right: 10px;" type="checkbox" name="selectAll"><label style="font-size: 17px;" for="selectAll">Select All</label>
+      <p id="msg"></p>
+      <a onclick="postOnMycommunity()" id="postbtn">Post On Mycommunity <img id="postloader" src="img/loader1.gif" style="width: 20px;display:none;"></a>
+    
+
+
+         
+  <ul id="listofinsta1" class="listone">
+
+  </ul>
+
+
+  </div>
+
+</body>
+
+<style>
+
+  #listofinsta1
+  {
+    list-style: none;
+    margin-top: 50px;
+  }
+
+.spc
+{
+  margin-left: 35%;
+}
+
+  .iconsimg
+  {
+    width: 20%;
+    float: left;
+    margin-top: 6px;
+  }
+
+#viewscount
+{
+  float: left;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.icons
+{
+    width: 50%;
+    height: 40px;
+    float: left;
+    /* background: blue; */
+}
+
+  .userpstdes
+  {
+    width: 100%;
+    height: auto;
+    /* background:green; */
+    float: left;
+    padding: 10px;
+  }
+
+#postuserimglink
+{
+     width: 100%;
+     height: 200px;
+     float: left;
+}
+
+  .imgpost
+  {
+    width: 100%;
+    height: auto;
+    /* background:blue; */
+    float: left;
+  }
+
+.postuser
+{
+  padding: 15px;
+    width: 23%;
+    height: 465px;
+    background: white;
+    float: left;
+    margin-top: 34px;
+    box-shadow: 2px 5px 11px -2px black;
+    margin-left: 18px;
+}
+
+
+</style>
+
+
+
+<script>
+
+
+    var since_id = 0;
+    $(document).ready(function() {
+        $("#header").load("siteHeader.html");
+    });
+
+
+
+
+    var description;
+    var imageurlofinsta;
+    var arrayitemsinsta;
+    arrayitemsinsta = [];
+
+    var newArr = arrayitemsinsta;
+    var arrayist;
+
+        
+
+
+    function OnFilterChange() {
+        
+        if ($('#sortfil').val() == 'Most Commented') {
+          
+
+          fetchtweets1();
+
+        }
+        if ($('#sortfil').val() == 'Most Liked') {
+
+          fetchtweets3();
+        }
+        if ($('#sortfil').val() == 'Most Recent') {
+
+fetchtweets();
+}
+
+        
+
+      }
+
+    function fetchtweets()
+    {
+      
+      var querysearchvaldemo;
+          querysearchvaldemo =  document.getElementById("querysearch").value;
+
+          const querysearchval = querysearchvaldemo.split(/\s/).join('');
+
+      
+        
+
+    var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function() {
+  if(this.readyState === 4) {
+    let jsonData = JSON.parse(this.responseText);
+    console.log(jsonData);
+     arrayist = jsonData.graphql.hashtag.edge_hashtag_to_media.edges;
+    console.log(arrayist);
+
+
+    var desc1;
+
+
+   
+    function likecounts()
+    {
+
+     
+
+// this is sorting the list of
+console.log(arrayist.sort((a, b) => {
+  if (b.node.edge_liked_by.count < a.node.edge_liked_by.count)
+    return -1;
+  if (a.node.edge_liked_by.count > b.node.edge_liked_by.count)
+    return 1;
+  return 0;
+}));
+
+
+
+    }
+  
+
+    
+
+    
+  
+    arrayist.forEach(function(item, index) {
+
+
+      
+
+
+      list = document.getElementById("listofinsta1");
+                    //			
+                    for (var i = document.getElementById("listofinsta1").getElementsByTagName("li").length - 1; i >= 0; i--) {
+
+                        var itemview = document.getElementById("listofinsta1").getElementsByTagName("li")[i];
+                        list.removeChild(itemview);
+
+                    }
+
+//       keysSorted = Object.keys(item.node).sort(function(a,b){return item.node[b]-item.node[a]})
+// console.log(keysSorted);
+          
+      if (item.node.accessibility_caption==null)
+         {
+          // console.log(item.node.accessibility_caption);
+         }
+         else
+         {
+          
+          // console.log(item.node.accessibility_caption);
+          
+          desc1 = item.node.accessibility_caption;
+
+         }
+
+//          const sorted = array.sort((a, b) => {  
+//   return b - a
+// })
+
+
+
+
+
+         var likescount = item.node.edge_liked_by.count;
+         var comments =  item.node.edge_media_to_comment.count;
+         var imageurl =  item.node.display_url;
+
+
+         var desc = desc1;
+      
+   
+
+
+         
+         
+
+
+         function toDataUrl(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        var reader = new FileReader();
+        reader.onloadend = function() {
+            callback(reader.result);
+        }
+        reader.readAsDataURL(xhr.response);
+    };
+    xhr.open('GET', url);
+    xhr.responseType = 'blob';
+    xhr.send();
+}
+
+
+
+         toDataUrl(imageurl, function(myBase64) {
+    // console.log(myBase64); // myBase64 is the base64 string
+    
+            // console.log(myBase64)
+
+                            var ul = document.getElementById("listofinsta1");
+                            var li = document.createElement('li');
+                            li.innerHTML = '<div class="postuser"><input type="checkbox" id="checkboxes"><div class="imgpost"><img src="'+myBase64+'" id="postuserimglink"></div><div class="userpstdes">'+desc+'</div><div class="icons"><img src="Icons/instagram/likes.png" class="iconsimg spc"><p id="viewscount">'+likescount+'</p></div><div class="icons"><img src="Icons/instagram/comments.png" class="iconsimg"><p id="viewscount">'+comments+'</p></div></div>';
+                            ul.appendChild(li);
+
+                            
+                            $("#checkboxes",li).click(function() {
+                 
+                            
+
+                              arrayitemsinsta.push(item.node);
+                                console.log(arrayitemsinsta);
+
+               
+//                                 someArray = arrayitemsinsta.filter(person => person.id != person.id);
+
+// console.log(someArray);
+for (var h = 0; h < arrayitemsinsta.length; h++) {
+                            var curItem = arrayitemsinsta[h];
+                            var foundCount = 0;
+                            // search array for item  
+
+
+                            for (var i = 0; i < arrayitemsinsta.length; i++) {
+                                if (arrayitemsinsta[i] == arrayitemsinsta[h])
+                                    foundCount++;
+                            }
+
+
+                            if (foundCount > 1) {
+                                // remove repeated item from new array
+                                for (var j = 0; j < newArr.length; j++) {
+                                    if (newArr[j] == curItem) {
+                                        newArr.splice(j, 1);
+                                        j = j - 1;
+
+                                    }
+
+
+                                }
+
+                            }
+
+                        }
+
+                        console.log(arrayitemsinsta);
+
+
+
+
+
+                              
+
+                              
+                            });
+
+
+                            
+        });
+
+        
+
+      });
+
+
+
+     
+
+
+
+  }
+});
+
+// var querysearchval = "upelections";
+
+xhr.open("GET", 'https://www.instagram.com/explore/tags/'+querysearchval+'/?__a=1');
+xhr.setRequestHeader("Cookie", "csrftoken=xB3TzYE0LciCsimDN3rjtRXHckokaPkL; ig_did=1A9D6D7D-5F03-45E6-9D79-3D6B30DBE211; ig_nrcb=1; mid=YeWsWgAEAAFm2eTq7VnKGw5Wwqrq");
+
+xhr.send(); 
+
+
+
+}
+
+    function fetchtweets1()
+    {
+      
+      var querysearchvaldemo;
+          querysearchvaldemo =  document.getElementById("querysearch").value;
+
+          const querysearchval = querysearchvaldemo.split(/\s/).join('');
+
+      
+        
+
+    var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function() {
+  if(this.readyState === 4) {
+    let jsonData = JSON.parse(this.responseText);
+    console.log(jsonData);
+    var arrayist = jsonData.graphql.hashtag.edge_hashtag_to_media.edges;
+    console.log(arrayist);
+
+
+    var desc1;
+
+  
+    
+     
+
+// this is sorting the list of
+console.log(arrayist.sort((a, b) => {
+  if (b.node.edge_liked_by.count < a.node.edge_liked_by.count)
+    return -1;
+  if (a.node.edge_liked_by.count > b.node.edge_liked_by.count)
+    return 1;
+  return 0;
+}));
+
+  
+
+    
+
+    
+  
+    arrayist.forEach(function(item, index) {
+
+
+      
+
+
+      list = document.getElementById("listofinsta1");
+                    //			
+                    for (var i = document.getElementById("listofinsta1").getElementsByTagName("li").length - 1; i >= 0; i--) {
+
+                        var itemview = document.getElementById("listofinsta1").getElementsByTagName("li")[i];
+                        list.removeChild(itemview);
+
+                    }
+
+//       keysSorted = Object.keys(item.node).sort(function(a,b){return item.node[b]-item.node[a]})
+// console.log(keysSorted);
+          
+      if (item.node.accessibility_caption==null)
+         {
+          // console.log(item.node.accessibility_caption);
+         }
+         else
+         {
+          
+          // console.log(item.node.accessibility_caption);
+          
+          desc1 = item.node.accessibility_caption;
+
+         }
+
+//          const sorted = array.sort((a, b) => {  
+//   return b - a
+// })
+
+
+
+
+
+         var likescount = item.node.edge_liked_by.count;
+         var comments =  item.node.edge_media_to_comment.count;
+         var imageurl =  item.node.display_url;
+
+
+         var desc = desc1;
+      
+   
+
+
+         
+         
+
+
+         function toDataUrl(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        var reader = new FileReader();
+        reader.onloadend = function() {
+            callback(reader.result);
+        }
+        reader.readAsDataURL(xhr.response);
+    };
+    xhr.open('GET', url);
+    xhr.responseType = 'blob';
+    xhr.send();
+}
+
+
+
+         toDataUrl(imageurl, function(myBase64) {
+    // console.log(myBase64); // myBase64 is the base64 string
+    
+            // console.log(myBase64)
+
+            var ul = document.getElementById("listofinsta1");
+                            var li = document.createElement('li');
+                            li.innerHTML = '<div class="postuser"><input type="checkbox" id="checkboxes"><div class="imgpost"><img src="'+myBase64+'" id="postuserimglink"></div><div class="userpstdes">'+desc+'</div><div class="icons"><img src="Icons/instagram/likes.png" class="iconsimg spc"><p id="viewscount">'+likescount+'</p></div><div class="icons"><img src="Icons/instagram/comments.png" class="iconsimg"><p id="viewscount">'+comments+'</p></div></div>';
+                            ul.appendChild(li);
+
+
+                           
+
+                            $("#checkboxes",li).click(function() {
+
+
+                              arrayitemsinsta.push(item.node);
+                                console.log(arrayitemsinsta);
+
+               
+                              // console.log(someArray);
+for (var h = 0; h < arrayitemsinsta.length; h++) {
+                            var curItem = arrayitemsinsta[h];
+                            var foundCount = 0;
+                            // search array for item  
+
+
+                            for (var i = 0; i < arrayitemsinsta.length; i++) {
+                                if (arrayitemsinsta[i] == arrayitemsinsta[h])
+                                    foundCount++;
+                            }
+
+
+                            if (foundCount > 1) {
+                                // remove repeated item from new array
+                                for (var j = 0; j < newArr.length; j++) {
+                                    if (newArr[j] == curItem) {
+                                        newArr.splice(j, 1);
+                                        j = j - 1;
+
+                                    }
+
+
+                                }
+
+                            }
+
+                        }
+
+                        console.log(arrayitemsinsta);
+
+
+                              
+                            });
+
+
+                            
+        });
+
+        
+
+      });
+
+
+
+     
+
+
+
+  }
+});
+
+// var querysearchval = "upelections";
+
+xhr.open("GET", 'https://www.instagram.com/explore/tags/'+querysearchval+'/?__a=1');
+xhr.setRequestHeader("Cookie", "csrftoken=xB3TzYE0LciCsimDN3rjtRXHckokaPkL; ig_did=1A9D6D7D-5F03-45E6-9D79-3D6B30DBE211; ig_nrcb=1; mid=YeWsWgAEAAFm2eTq7VnKGw5Wwqrq");
+
+xhr.send(); 
+
+
+
+}
+
+    function fetchtweets3()
+    {
+      
+      var querysearchvaldemo;
+          querysearchvaldemo =  document.getElementById("querysearch").value;
+
+          const querysearchval = querysearchvaldemo.split(/\s/).join('');
+
+      
+    var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function() {
+  if(this.readyState === 4) {
+    let jsonData = JSON.parse(this.responseText);
+    console.log(jsonData);
+    var arrayist = jsonData.graphql.hashtag.edge_hashtag_to_media.edges;
+    console.log(arrayist);
+
+
+    var desc1;
+
+  
+    
+     
+
+// this is sorting the list of
+console.log(arrayist.sort((a, b) => {
+  if (b.node.edge_media_to_comment.count < a.node.edge_media_to_comment.count)
+    return -1;
+  if (a.node.edge_media_to_comment.count > b.node.edge_media_to_comment.count)
+    return 1;
+  return 0;
+}));
+
+  
+
+    
+
+    
+  
+    arrayist.forEach(function(item, index) {
+
+
+      
+
+
+      list = document.getElementById("listofinsta1");
+                    //			
+                    for (var i = document.getElementById("listofinsta1").getElementsByTagName("li").length - 1; i >= 0; i--) {
+
+                        var itemview = document.getElementById("listofinsta1").getElementsByTagName("li")[i];
+                        list.removeChild(itemview);
+
+                    }
+
+//       keysSorted = Object.keys(item.node).sort(function(a,b){return item.node[b]-item.node[a]})
+// console.log(keysSorted);
+          
+      if (item.node.accessibility_caption==null)
+         {
+          // console.log(item.node.accessibility_caption);
+         }
+         else
+         {
+          
+          // console.log(item.node.accessibility_caption);
+          
+          desc1 = item.node.accessibility_caption;
+
+         }
+
+//          const sorted = array.sort((a, b) => {  
+//   return b - a
+// })
+
+
+
+
+
+         var likescount = item.node.edge_liked_by.count;
+         var comments =  item.node.edge_media_to_comment.count;
+         var imageurl =  item.node.display_url;
+
+
+         var desc = desc1;
+      
+   
+
+
+         
+         
+
+
+         function toDataUrl(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        var reader = new FileReader();
+        reader.onloadend = function() {
+            callback(reader.result);
+        }
+        reader.readAsDataURL(xhr.response);
+    };
+    xhr.open('GET', url);
+    xhr.responseType = 'blob';
+    xhr.send();
+}
+
+
+
+         toDataUrl(imageurl, function(myBase64) {
+    // console.log(myBase64); // myBase64 is the base64 string
+    
+            // console.log(myBase64)
+
+            var ul = document.getElementById("listofinsta1");
+                            var li = document.createElement('li');
+                            li.innerHTML = '<div class="postuser"><input type="checkbox" id="checkboxes"><div class="imgpost"><img src="'+myBase64+'" id="postuserimglink"></div><div class="userpstdes">'+desc+'</div><div class="icons"><img src="Icons/instagram/likes.png" class="iconsimg spc"><p id="viewscount">'+likescount+'</p></div><div class="icons"><img src="Icons/instagram/comments.png" class="iconsimg"><p id="viewscount">'+comments+'</p></div></div>';
+                            ul.appendChild(li);
+
+
+                           
+
+                            $("#checkboxes",li).click(function() {
+
+
+    
+
+                              arrayitemsinsta.push(item.node);
+                                console.log(arrayitemsinsta);
+
+               
+                              // console.log(someArray);
+for (var h = 0; h < arrayitemsinsta.length; h++) {
+                            var curItem = arrayitemsinsta[h];
+                            var foundCount = 0;
+                            // search array for item  
+
+
+                            for (var i = 0; i < arrayitemsinsta.length; i++) {
+                                if (arrayitemsinsta[i] == arrayitemsinsta[h])
+                                    foundCount++;
+                            }
+
+
+                            if (foundCount > 1) {
+                                // remove repeated item from new array
+                                for (var j = 0; j < newArr.length; j++) {
+                                    if (newArr[j] == curItem) {
+                                        newArr.splice(j, 1);
+                                        j = j - 1;
+
+                                    }
+
+
+                                }
+
+                            }
+
+                        }
+
+                        console.log(arrayitemsinsta);
+
+                              
+                            });
+
+
+                            
+        });
+
+        
+
+      });
+
+
+
+     
+
+
+
+  }
+});
+
+// var querysearchval = "upelections";
+
+xhr.open("GET", 'https://www.instagram.com/explore/tags/'+querysearchval+'/?__a=1');
+xhr.setRequestHeader("Cookie", "csrftoken=xB3TzYE0LciCsimDN3rjtRXHckokaPkL; ig_did=1A9D6D7D-5F03-45E6-9D79-3D6B30DBE211; ig_nrcb=1; mid=YeWsWgAEAAFm2eTq7VnKGw5Wwqrq");
+
+xhr.send(); 
+
+
+
+}
+
+
+ // Listen for click on toggle checkbox
+ $('#select-all').click(function(event) {
+    if(this.checked) {
+        // Iterate each checkbox
+        $(':checkbox').each(function() {
+            this.checked = true;            
+        });
+    } else {
+        $(':checkbox').each(function() {
+            this.checked = false;  
+
+
+        });
+    }
+}); 
+
+function myFunction() {
+  var checkBox = document.getElementById("select-all");
+ 
+  if (checkBox.checked == true){
+
+    arrayist.forEach(function(item, index) {
+
+    
+      arrayitemsinsta.push(item.node);
+      console.log(arrayitemsinsta);
+
+    });
+
+  
+  } else {
+
+    arrayitemsinsta = [];
+    console.log(arrayitemsinsta);
+  }
+}
+
+  
+
+
+ function postOnMycommunity() {
+
+  
+
+  saveimageinMycommunity();
+        
+ 
+
+    }
+
+    
+   
+
+
+function saveimageinMycommunity() {
+
+  arrayitemsinsta.forEach(function(item, index) {
+
+        var token = sessionStorage.getItem('_token');
+        data = {
+            "activityObject": {
+                "image": {
+                    "id": item.display_url,
+                    "type": "external/url"
+                }
+            },
+            "activityType": "post_activity",
+            "description": item.accessibility_caption,
+            "locationPost": false,
+            "privacy": "PUBLIC"
+        }
+        console.log(data);
+        let post_ = async() => {
+            const response_ = await fetch('https://proxy.actv.05media.com:443/rest/private/sinactivityservice/add', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Authorization': token,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+
+                },
+            });
+            $('#postloader').hide();
+        }
+        post_();
+
+      });
+
+    }
+
+   
+
+    
+
+
+    
+</script>
+<style>
+
+
+
+#checkboxes
+{
+   
+  margin-left: 66%;
+    width: 174px;
+    /* position: absolute; */
+    z-index: 49;
+    height: 21px;
+    margin-bottom: 10px;
+    
+}
+
+
+    #content {
+        margin-top: 51px;
+    }
+
+    
+    
+    input {
+        background-color: #fff !important;
+    }
+    
+    .btn {
+        width: 83px;
+    }
+    
+    .int {
+        width: 23%;
+        margin-left: 75px;
+    }
+    
+    
+    
+    
+    #postbtn {
+        background: deepskyblue;
+        padding: 16px;
+        color: #fff;
+        font-size: 16px;
+        text-align: center;
+        position: absolute;
+        right: 77px;
+        top: 185px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    #sortfil {
+        padding: 14px;
+        outline: none;
+    }
+    
+    .sortlabel {
+        margin-left: 50px;
+        font-size: 18px;
+        margin-right: 9px;
+    }
+</style>
+
+
+
+</html>
